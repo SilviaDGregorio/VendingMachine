@@ -1,0 +1,92 @@
+﻿@using Web.DTOs
+@model List<Web.DTOs.Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+    <!DOCTYPE html>
+    <div class="text-center">
+        @foreach (var product in Model)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div>
+                        <strong>@product.Name</strong>&nbsp;
+                        <span>@product.Price</span>&nbsp;
+                        <span>@product.Stock</span>
+                    </div>
+                </div>
+            </div>
+        }
+    <form id="AjaxForm">
+        @Html.AntiForgeryToken()
+        <div class="row">
+
+            <button type="button" class="coin" value="100">1€</button>
+            <button type="button" class="coin" value="200">2€</button>
+            <button type="button" class="coin" value="50">0,50€</button>
+            <button type="button" class="coin" value="20">0,20€</button>
+            <button type="button" class="coin" value="10">0,10€</button>
+            <button type="button" class="coin" value="5">0,05€</button>
+            <button type="button" class="coin" value="2">0,02€</button>
+            <button type="button" class="coin" value="1">0,01€</button>
+            @foreach (var product in Model)
+            {
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <button class="product" type="button" value="@product.Type">@product.Name</button>
+                    </div>
+                </div>
+
+            }
+            <button type="submit">Buy</button>
+        </div>
+    </form>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript">
+
+            $(function () {
+                var listCoins = new Array();
+                var product = 0;
+            $("#AjaxForm").submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "@Url.Action("OnPost", "Home")",
+                    type: 'POST',
+                    data: JSON.stringify({ InsertedMoney: listCoins, Product: product }),                    
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    async: false,
+                    
+                   headers: {
+                       RequestVerificationToken: 
+                           $('input:hidden[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                // Se ejecuta si todo fue bien.
+                    .done(function (result) {
+                        alert(result.item1 +" " +result.item2);
+                        if (result.item1 == "Yes!") {
+                            
+                        }
+                        else {
+                        }
+                })
+                // Se ejecuta si se produjo un error.
+                .fail(function (xhr, status, error) {
+
+                })
+                // Hacer algo siempre, haya sido exitosa o no.
+                    .always(function () {
+                        listCoins = new Array();
+                        product = 0;
+                });
+            });
+            $('.coin').click(function () {
+                listCoins.push($(this).val());
+            });
+                $('.product').click(function () {
+                    product = $(this).val();
+            });
+        });
+
+        </script>

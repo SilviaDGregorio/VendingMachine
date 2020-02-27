@@ -1,0 +1,7 @@
+rm *.sln
+dotnet new sln 
+
+dotnet sln add **/**/*.csproj
+dotnet clean
+dotnet restore
+dotnet build
